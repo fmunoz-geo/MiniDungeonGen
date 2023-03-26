@@ -81,55 +81,50 @@ function getDungeonMap() {
 		roomData = CreateRoom(xTile * cs, yTile * cs, xW, yH);
 		dungeon += roomData.room;
 		dungeon += createDoor(xTile * cs, yTile * cs, 'horizontal');
+		xTile= xTile + xW;
 	  } else if (direction === 'down') {
 		xW = 1;
 		yH = Math.floor(2 + Math.random() * 4);
 		roomData = CreateRoom(xTile * cs, yTile * cs, xW, yH);
 		dungeon += roomData.room;
 		dungeon += createDoor(xTile * cs, yTile * cs, 'vertical');
+		yTile = yTile + yH - 1;
 	  } else if (direction === 'up') {
 		xW = 1;
 		yH = Math.floor(2 + Math.random() * 4);
 		roomData = CreateRoom(xTile * cs, (yTile - yH + 1) * cs, xW, yH);
 		dungeon += roomData.room;
 		dungeon += createDoor(xTile * cs, (yTile + 1) * cs, 'vertical');
+		yTile= yTile - yH + 1;
 	  }
 	  crosshatch += roomData.crosshatch;
 	  shadow += roomData.shadow;
-	  if (direction === 'right') {
-		return { xTile: xTile + xW, yTile };
-	  } else if (direction === 'down') {
-		return { xTile: xTile, yTile: yTile + yH - 1 };
-	  } else if (direction === 'up') {
-		return { xTile: xTile, yTile: yTile - yH + 1 };
-	  }
+	  return {xTile: xTile, yTile: yTile}
 	}
 	function makeRandomRoom(xTile, yTile, direction) {
-	  let xW, yH, xTileN, yTileN, roomData;
-	  xW = Math.floor(3 + Math.random() * 4);
-	  yH = Math.floor(3 + Math.random() * 4);
+	  let xW = Math.floor(3 + Math.random() * 4);
+	  let yH = Math.floor(3 + Math.random() * 4);
+	  let xTileN, yTileN, roomData;
 	  if (direction === 'right') {
 		yTileN = Math.min(Math.max(yTile - yH + 1 + Math.floor(Math.random() * yH), 1), maxY - yH);
-		roomData = CreateRoom(xTile * cs, yTileN * cs, xW, yH);
-	  } else if (direction === 'down') {
-		xW = xW - 1;
-		yH = yH - 1;
+	  } else {
+		xW--;
+		yH--;
 		xTileN = Math.min(Math.max(xTile - xW + 1 + Math.floor(Math.random() * xW), 1), maxX - xW);
-		roomData = CreateRoom(xTileN * cs, yTile * cs, xW, yH);
-		xTile = xTileN;
-	  } else if (direction === 'up') {
-		xW = xW - 1;
-		yH = yH - 1;
-		xTileN = Math.min(Math.max(xTile - xW + 1 + Math.floor(Math.random() * xW), 1), maxX - xW);
-		roomData = CreateRoom(xTileN * cs, (yTile - yH) * cs, xW, yH);
+		if (direction === 'down') {
+		  yTileN = yTile;
+		} else if (direction === 'up') {
+		  yTileN = yTile - yH;
+		}
 		xTile = xTileN;
 	  }
+	  roomData = CreateRoom(xTile * cs, yTileN * cs, xW, yH);
 	  dungeon += roomData.room;
 	  crosshatch += roomData.crosshatch;
 	  shadow += roomData.shadow;
-	  return { xTile: xTile, yTile: yTileN, xW: xW, yH: yH };
-	}
-	while (xTile < maxX - 5) {
+	  return { xTile, yTile: yTileN, xW, yH };
+	}	
+while (xTile < maxX - 5) {
 	  let branchPos;
 	  let newPos = makeRandomCorridor(xTile, yTile, 'right');
 	  xTile = newPos.xTile;
